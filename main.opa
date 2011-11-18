@@ -31,9 +31,9 @@ my_engine = { Template.empty with
  
 engine = Template.combine(Template.default, my_engine)
 content = Template.parse(engine,
-"<div xmlns:my=\"http://response.xsd\">
-<my:response />
-</div>"
+  "<div xmlns:my=\"http://response.xsd\">
+     <my:response />
+   </div>"
 )
 
 xhtml = Template.to_xhtml(engine, content)
