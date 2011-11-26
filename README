@@ -6,34 +6,44 @@ A template extension for OPA's Template.default engine.
 What is this good for?
 
 To create a meta language that simplifies Twitters bootstrap toolkit even a bit
-more (although it is already quite simple).
+more. Although it is already quite simple, the readability and usability could
+still be improved further.
 
 
-How can this be used?
+How can this be used (finally)?
 
 Examples:
   
-without oxml                      with oxml
+without oxml                            with oxml
 
-<body>                          | <body>
-  <div class="container-fluid"> |   <container layout="fluid">
-    <div class="sidebar">       |     <sidebar>
-      ...                       |       ...
-    </div>                      |     </sidebar>
-    <div class="content">       |     <content>
-      ...                       |       ...
-    </div>                      |     </content>
-  </div>                        |   </container>
-</body>                         | </body>
+<body>                                | <body>
+  <div class="container-fluid">       |   <container layout="fluid">
+    <div class="sidebar">             |     <sidebar>
+      ...                             |       ...
+    </div>                            |     </sidebar>
+    <div class="content">             |     <content>
+      ...                             |       ...
+    </div>                            |     </content>
+  </div>                              |   </container>
+</body>                               | </body>
 
-<div class="row">               | <row>
-  <div class="span4">           |   <col span="4">
-    ...                         |     ...
-  </div>                        |   </col>
-  <div class="span10 offset2">  |   <col span="10" offset="2">
-    ...                         |     ...
-  </div>                        |   </col>
-</div>                          | </row>
+<div class="row">                     | <row>
+  <div class="span4">                 |   <col span="4">
+    ...                               |     ...
+  </div>                              |   </col>
+  <div class="span10 offset2">        |   <col span="10" offset="2">
+    ...                               |     ...
+  </div>                              |   </col>
+</div>                                | </row>
+
+<div class="alert-message warning">   | <alert strength="warning">
+  <a class="close" href="#">×</a>     |   <strong>Holy guacamole!</strong>
+  <p><strong>Holy guacamole!</strong> |   Best check yo self, you’re not 
+    Best check yo self, you’re not    |   looking too good.
+    looking too good.</p>             | </alert>
+</div>                                |
+
+...                                   | ...
 
 
 How can I use it?
@@ -41,3 +51,20 @@ How can I use it?
 Import the oxml module and render the page content via Oxml.create(). The
 content can either be included from a template file or just as a string. See
 main.opa how it is done.
+
+
+What is still to do?
+
+Completing it. ;)
+
+Currently this can just be used via a specified namespace, so every customized
+tag has to be like "<o:...>". Is there any way to omit the namespace usage?
+
+There might be some problems with tags already used, like <label>. How can this
+be differenced? Same problem might occur with "reserved" attribute names like
+class etc.
+
+How can Javascript functionality be implemented? F.e. table sorter, modals,
+popovers, etc.
+
+Less?
