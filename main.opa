@@ -1,8 +1,11 @@
 import oxml
 
-page = @static_content('content.oxml')
+page = @static_content("content.oxml")
 
-server = Server.one_page_server("oxml prototype", Oxml.create(page))
+server = Server.one_page_bundle("oxml prototype", [],
+  ["http://twitter.github.com/bootstrap/assets/css/docs.css"],
+   Oxml.create(page)
+)
 
 //alternative use 1: (inline page content as string)
 /*

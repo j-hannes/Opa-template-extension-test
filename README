@@ -57,14 +57,29 @@ What is still to do?
 
 Completing it. ;)
 
-Currently this can just be used via a specified namespace, so every customized
-tag has to be like "<o:...>". Is there any way to omit the namespace usage?
+Allowed tags restriction. For example in <container layout="fluid"> has to be
+exactly one <sidebar> and one <content> tag and nothing else. How can this be
+invoked? In the same way some tags like <heading> can just allow strings.
 
-There might be some problems with tags already used, like <label>. How can this
-be differenced? Same problem might occur with "reserved" attribute names like
-class etc.
+Currently this language can just be used via a specified namespace, so every
+customized tag has to be like "<o:...>". Is there any way to omit the namespace
+usage?
+
+How can crashing due to wrong formatting be avoided? Currently just one single
+wrong formatted piece of (oxml) code lets (Opa's) template parser reject the
+whole thing and outputs escaped source code. There might be a better solution.
+
+Short ending tags (like </> or even identation controlled tags like, in Hamlet)
+might be nice.
+
+There might be some problems with tags already used, like "<label>". How can
+this be differenced? Same problem might occur with reserved attribute names like
+"class" etc.
 
 How can Javascript functionality be implemented? F.e. table sorter, modals,
 popovers, etc.
 
 Less?
+
+Which philosophy should be followed in case of strictness with the code (error
+messages on wrong attribute values / labels or rather default templates)?

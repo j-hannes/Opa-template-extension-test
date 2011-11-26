@@ -12,11 +12,23 @@ type oxml = {tag:     oxmltag
              content: xhtml}
 
 type oxmltag = {container}
+             / {sidebar}
+             / {content}
+             / {topbar}
+             / {logo}
+             / {nav}
+             / {search}
+             / {dropdown}
+             / {divider}
+             / {row}
+             / {col}
              / {heading}
              / {label}
+             / {alert}
              / {button}
              / {unsupported tag:string}
               
+// used in engine.parse
 type parset('a) = outcome(Template.content(either(oxml, 'a)), Template.failure)
 
 
@@ -36,11 +48,62 @@ Oxml = {{
    */
   tags = {{
     /**
-     * Layouts
-     *   - fixed
+     * Page layouts
      */
-    container(_, content) =
-      <div class="container">{content}</div>
+    container(layout, content) =
+      match layout with
+      | "fluid" -> <div class="container-fluid">{content}</div>
+      | _       -> <div class="container">{content}</div>
+
+    sidebar(content) =
+      <div class="sidebar">{content}</div>
+
+    content(content) =
+      <div class="content">{content}</div>
+
+    topbar(content) = //customized dropdwon value?
+      <div class="topbar" data-dropdown="dropdown"> 
+        <div class="topbar-inner">
+          <div class="container">
+            {content}
+          </div>
+        </div>
+      </div>
+
+    logo(content) =
+      <h3>{content}</h3>
+
+    nav(content) =
+      <ul class="nav">{content}</ul>
+
+    search =
+      <form class="pull-left" action="">
+        <input type="text" placeholder="Search" />
+      </form>
+
+    dropdown(title, content) =
+      <ul class="nav secondary-nav">
+        <li class="dropdown">
+          <a class="dropdown-toggle" href="#">{title}</a>
+          <ul class="dropdown-menu">
+            {content}
+          </ul>
+        </li>
+      </ul> 
+
+    divider =
+      <li class="divider"></li>
+
+    row(content) =
+      <div class="row show-grid">{content}</div>
+
+    col(span, offset, content) =
+      first = "span{span}"
+      final =
+        match offset with
+        | "" -> first
+        | _  -> "{first} offset{offset}"
+      <div class="{final}">{content}</div>
 
     /**
      * Headings [complete]
@@ -68,6 +131,11 @@ Oxml = {{
     label(lbltype, content) =
       <span class="label {lbltype}">{content}</span>
 
+    alert(strength, content) =
+      <div class="alert-message {strength}">
+        <a class="close" href="#">x</a><p>{content}</p>
+      </div>
+
     /**
      * Special unsupported tag element. Appears when a tag is used in the oxml
      * namespace which is not a type of oxmltag.
@@ -90,13 +158,13 @@ Oxml = {{
    * from "outside".
    */
   create(page:(->string)):(->xhtml) =
-    (-> parse2xhtml(oxml_engine, page()))
+    (-> parse2xhtml(page()))
   
 
   /**
    * Standard parsing function for main content.
    */
-  parse2xhtml(engine, content:string):xhtml =
+  parse2xhtml(content:string):xhtml =
     Template.parse(engine, content)
     |> Template.to_xhtml(engine, _)
   
@@ -108,7 +176,7 @@ Oxml = {{
    *
    * This engine is combined with the Template.default engine in the end.
    */
-  rec val oxml_engine = {Template.empty with
+  rec val engine = {Template.empty with
   
     parse(_, {~xmlns ...}): parset = 
       match xmlns with
@@ -128,16 +196,26 @@ Oxml = {{
    * Extend the template by parsed tag.
    */
   extend(xmlns):Template.content =
-    (tag, engine) =
+    tag =
       match xmlns.tag with
-      | "container" -> ({container},                 oxml_engine)
-      | "heading"   -> ({heading},                   oxml_engine)
-      | "ilabel"    -> ({label},                     oxml_engine)
-      | "ibutton"   -> ({button},                    oxml_engine)
-      | _           -> ({unsupported tag=xmlns.tag}, oxml_engine)
+      | "container" -> {container}
+      | "sidebar"   -> {sidebar}
+      | "content"   -> {content}
+      | "topbar"    -> {topbar}
+      | "logo"      -> {logo}
+      | "nav"       -> {nav}
+      | "search"    -> {search}
+      | "dropdown"  -> {dropdown}
+      | "divider"   -> {divider}
+      | "row"       -> {row}
+      | "col"       -> {col}
+      | "heading"   -> {heading}
+      | "ilabel"    -> {label}
+      | "alert"      -> {alert}
+      | "ibutton"   -> {button}
+      | _           -> {unsupported tag=xmlns.tag}
 
-    content = convert_to_string(xmlns.content)
-              |> parse2xhtml(engine, _)
+    content = convert_to_string(xmlns.content) |> parse2xhtml
 
     Template.to_extension({~tag ~content args=xmlns.args})
 
@@ -147,13 +225,40 @@ Oxml = {{
    */
   render(node:oxml):xhtml = 
     match node.tag with
-    | {container}        -> tags.container("", node.content)
+    | {container}        -> layout = get_attribute("layout", node.args)
+                            tags.container(layout, node.content)
+
+    | {sidebar}          -> tags.sidebar(node.content)
+
+    | {content}          -> tags.content(node.content)
+
+    | {topbar}           -> tags.topbar(node.content)
+
+    | {logo}             -> tags.logo(node.content)
+
+    | {nav}              -> tags.nav(node.content)
+
+    | {search}           -> tags.search
+
+    | {dropdown}         -> title = get_attribute("title", node.args)
+                            tags.dropdown(title, node.content)
+
+    | {divider}          -> tags.divider
+
+    | {row}              -> tags.row(node.content)
+
+    | {col}              -> span   = get_attribute("span",   node.args)
+                            offset = get_attribute("offset", node.args)
+                            tags.col(span, offset, node.content)
 
     | {heading}          -> level = get_attribute("level", node.args)
                             tags.heading(level, node.content)
 
     | {label}            -> flag = get_attribute("flag", node.args)
                             tags.label(flag, node.content)
+
+    | {alert}            -> strength = get_attribute("strength", node.args)
+                            tags.alert(strength, node.content)
 
     | {button}           -> flag = get_attribute("flag", node.args)
                             tags.button(flag, node.content)
