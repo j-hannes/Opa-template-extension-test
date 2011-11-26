@@ -1,6 +1,43 @@
-was:
-(fixed) example from
-http://doc.opalang.org/api/stdlib.web.template.template.opa.html
+What is this?
 
-now:
-oxml experiment (in heavy development)
+A template extension for OPA's Template.default engine.
+
+
+What is this good for?
+
+To create a meta language that simplifies Twitters bootstrap toolkit even a bit
+more (also it is already quite simple).
+
+
+How can this be used?
+
+Examples:
+  
+without oxml                      with oxml
+
+<body>                          | <body>
+  <div class="container-fluid"> |   <container layout="fluid">
+    <div class="sidebar">       |     <sidebar>
+      ...                       |       ...
+    </div>                      |     </sidebar>
+    <div class="content">       |     <content>
+      ...                       |       ...
+    </div>                      |     </content>
+  </div>                        |   </container>
+</body>                         | </body>
+
+<div class="row">               | <row>
+  <div class="span4">           |   <col span="4">
+    ...                         |     ...
+  </div>                        |   </col>
+  <div class="span10 offset2">  |   <col span="10" offset="2">
+    ...                         |     ...
+  </div>                        |   </col>
+</div>                          | </row>
+
+
+How can I use it?
+
+Import the oxml module and render the page content via Oxml.create(). The
+content can either be included from a template file or just as a string. See
+main.opa how it is done.
