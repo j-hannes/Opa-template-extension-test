@@ -9,15 +9,6 @@ server = Server.one_page_bundle("oxml prototype", [],
 )
 
 page = -> Xhtml.to_string(
-<!--
-  If you are editing this file with vim and want to have syntax highlighting
-  here, just add the following line to you .vimrc:
-
-  au BufNewFile,BufRead *.oxml set filetype=html
-
--->
-
-<div xmlns:o="http://oxml.org">
   <o:topbar>
     <o:logo><a href="#">a logo</a></o:logo>
     <o:nav>
